@@ -24,6 +24,7 @@ func (l *Loader) ContentType() string {
 }
 
 func (l *Loader) Load() error {
+	l.log.Infof("get config DataId: %s, Group: %s", l.dataId, l.group)
 	content, err := l.client.GetConfig(vo.ConfigParam{
 		DataId: l.dataId,
 		Group:  l.group,
@@ -44,6 +45,7 @@ func NewLoader(
 	group string,
 	dataId string,
 	contentType string,
+	log easyconfmgr.Logger,
 ) easyconfmgr.Loader {
-	return &Loader{client: client, group: group, dataId: dataId, contentType: contentType}
+	return &Loader{client: client, group: group, dataId: dataId, contentType: contentType, log: log}
 }
