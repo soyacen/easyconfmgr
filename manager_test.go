@@ -114,7 +114,8 @@ func TestManager(t *testing.T) {
 	manager := easyconfmgr.NewManager(
 		easyconfmgr.WithLoader(easyconfmgrfile.NewLoader(configFile, easyconfmgr.DiscardLogger)),
 		easyconfmgr.WithParser(easyconfmgrparser.NewYamlParser()),
-		easyconfmgr.WithValuer(easyconfmgrvaluer.NewTrieTreeValuer()))
+		easyconfmgr.WithValuer(easyconfmgrvaluer.NewTrieTreeValuer()),
+	)
 	err := manager.ReadConfig()
 	if err != nil {
 		t.Fatal(err)
