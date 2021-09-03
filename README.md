@@ -1,23 +1,16 @@
-# easyconfig
-Easy to use、extensible configuration manager for golang 
-
-## Install
-
-```shell
-go get github.com/soyacen/easyconfmgr
-```
-
+# leoconfmgr
+Easy to use、extensible configuration manager for golang
 
 # example
 ## file
 ```go
-watcher, err := easyconfmgrfile.NewWatcher(fp, easyconfmgr.DiscardLogger)
+watcher, err := leoconfmgrfile.NewWatcher(fp)
 
-manager := easyconfmgr.NewManager(
-    easyconfmgr.WithLoader(easyconfmgrfile.NewLoader(configFile, easyconfmgr.DiscardLogger)),
-    easyconfmgr.WithParser(easyconfmgrparser.NewYamlParser()),
-    easyconfmgr.WithValuer(easyconfmgrvaluer.NewTrieTreeValuer()),
-    easyconfmgr.WithWatcher(watcher),
+manager := leoconfmgr.NewManager(
+    leoconfmgr.WithLoader(leoconffile.NewLoader(configFile)),
+    leoconfmgr.WithParser(leoconfparser.NewYamlParser()),
+    leoconfmgr.WithValuer(leoconfvaluer.NewTrieTreeValuer()),
+    leoconfmgr.WithWatcher(watcher),
 )
 err := manager.ReadConfig()
 if err != nil {

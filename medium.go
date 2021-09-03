@@ -1,5 +1,20 @@
 package easyconfmgr
 
+type Medium interface {
+	Loader
+	Watcher
+}
+
+// Loader load data from some medium.
+type Loader interface {
+	// ContentType get config content type
+	ContentType() string
+	// Load load config raw data from some where, like local file or remote server
+	Load() error
+	// RawData get raw data
+	RawData() []byte
+}
+
 // Watcher  monitors whether the data source has changed and, if so, notifies the changed event
 type Watcher interface {
 	// Watch start watch
@@ -9,6 +24,7 @@ type Watcher interface {
 	// Stop stop watch
 	Stop() error
 }
+
 type EventKey interface {
 	KeyName() string
 }

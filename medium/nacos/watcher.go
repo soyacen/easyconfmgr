@@ -1,4 +1,4 @@
-package easyconfmgrnacos
+package mediumnacos
 
 import (
 	"fmt"
@@ -30,46 +30,58 @@ type Watcher struct {
 	log       easyconfmgr.Logger
 }
 
-func (w *Watcher) Watch() error {
-	w.log.Infof("start listen config, dataId: %s, group: %s", w.dataId, w.group)
-	return w.client.ListenConfig(vo.ConfigParam{
-		DataId: w.dataId,
-		Group:  w.group,
+func (watcher *Watcher) Watch() error {
+	watcher.log.Infof("start listen config, dataId: %s, group: %s", watcher.dataId, watcher.group)
+	return watcher.client.ListenConfig(vo.ConfigParam{
+		DataId: watcher.dataId,
+		Group:  watcher.group,
 		OnChange: func(namespace, group, dataId, data string) {
 			event := &EventDescription{namespace: namespace, group: group, dataId: dataId}
-			w.events <- easyconfmgr.NewEvent(event, []byte(data))
+			watcher.events <- easyconfmgr.NewEvent(event, []byte(data))
 		},
 	})
 }
 
-func (w *Watcher) Events() <-chan *easyconfmgr.Event {
-	return w.events
+func (watcher *Watcher) Events() <-chan *easyconfmgr.Event {
+	return watcher.events
 }
 
-func (w *Watcher) Stop() error {
-	return w.stop()
+func (watcher *Watcher) Stop() error {
+	return watcher.stop()
 }
 
-func (w *Watcher) stop() error {
-	w.mu.Lock()
-	defer w.mu.Unlock()
-	if !w.isStopped {
-		w.log.Info("stop watching...")
-		w.isStopped = true
-		close(w.events)
-		return w.client.CancelListenConfig(vo.ConfigParam{
-			DataId: w.dataId,
-			Group:  w.group,
+func (watcher *Watcher) stop() error {
+	watcher.mu.Lock()
+	defer watcher.mu.Unlock()
+	if !watcher.isStopped {
+		watcher.log.Info("stop watching...")
+		watcher.isStopped = true
+		close(watcher.events)
+		return watcher.client.CancelListenConfig(vo.ConfigParam{
+			DataId: watcher.dataId,
+			Group:  watcher.group,
 		})
 	}
 	return nil
+}
+
+type WatcherOption func(watcher *Watcher)
+
+func WithLogger(log easyconfmgr.Logger) LoaderOption {
+	return func(loader *Loader) {
+		loader.log = log
+	}
 }
 
 func NewWatcher(
 	client config_client.IConfigClient,
 	group string,
 	dataId string,
-	log easyconfmgr.Logger,
+	opts ...WatcherOption,
 ) *Watcher {
-	return &Watcher{client: client, group: group, dataId: dataId, log: log, events: make(chan *easyconfmgr.Event)}
+	watcher := &Watcher{client: client, group: group, dataId: dataId, events: make(chan *easyconfmgr.Event)}
+	for _, opt := range opts {
+		opt(watcher)
+	}
+	return watcher
 }

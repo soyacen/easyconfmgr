@@ -1,4 +1,4 @@
-package easyconfmgrnacos
+package mediumnacos
 
 import (
 	"github.com/nacos-group/nacos-sdk-go/clients/config_client"
@@ -19,25 +19,33 @@ type Loader struct {
 	log         easyconfmgr.Logger
 }
 
-func (l *Loader) ContentType() string {
-	return l.contentType
+func (loader *Loader) ContentType() string {
+	return loader.contentType
 }
 
-func (l *Loader) Load() error {
-	l.log.Infof("get config DataId: %s, Group: %s", l.dataId, l.group)
-	content, err := l.client.GetConfig(vo.ConfigParam{
-		DataId: l.dataId,
-		Group:  l.group,
+func (loader *Loader) Load() error {
+	loader.log.Infof("get config DataId: %s, Group: %s", loader.dataId, loader.group)
+	content, err := loader.client.GetConfig(vo.ConfigParam{
+		DataId: loader.dataId,
+		Group:  loader.group,
 	})
 	if err != nil {
 		return err
 	}
-	l.data = []byte(content)
+	loader.data = []byte(content)
 	return nil
 }
 
-func (l *Loader) RawData() []byte {
-	return l.data
+func (loader *Loader) RawData() []byte {
+	return loader.data
+}
+
+type LoaderOption func(loader *Loader)
+
+func Logger(log easyconfmgr.Logger) LoaderOption {
+	return func(loader *Loader) {
+		loader.log = log
+	}
 }
 
 func NewLoader(
@@ -45,7 +53,11 @@ func NewLoader(
 	group string,
 	dataId string,
 	contentType string,
-	log easyconfmgr.Logger,
+	opts ...LoaderOption,
 ) easyconfmgr.Loader {
-	return &Loader{client: client, group: group, dataId: dataId, contentType: contentType, log: log}
+	loader := &Loader{client: client, group: group, dataId: dataId, contentType: contentType, log: easyconfmgr.DiscardLogger}
+	for _, opt := range opts {
+		opt(loader)
+	}
+	return loader
 }

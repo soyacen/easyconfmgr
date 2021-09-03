@@ -1,4 +1,4 @@
-package easyconfmgrvaluer
+package easyconfmgrvaluer_test
 
 import (
 	"reflect"
@@ -7,6 +7,8 @@ import (
 
 	"github.com/derekparker/trie"
 	"github.com/soyacen/goutils/sliceutils"
+
+	easyconfmgrvaluer "github.com/soyacen/easyconfmgr/valuer"
 )
 
 func TestMapToTrie(t *testing.T) {
@@ -83,7 +85,7 @@ func TestMapToTrie(t *testing.T) {
 	}
 
 	tree := trie.New()
-	MapToTrie(config, tree)
+	easyconfmgrvaluer.MapToTrie(config, tree)
 	actualKeys := tree.Keys()
 	for i := range exceptedKeys {
 		key := exceptedKeys[i]

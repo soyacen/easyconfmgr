@@ -1,4 +1,4 @@
-package easyconfmgrnacos_test
+package mediumnacos_test
 
 import (
 	"log"
@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/soyacen/easyconfmgr"
-	easyconfmgrnacos "github.com/soyacen/easyconfmgr/medium/nacos"
+	mediumnacos "github.com/soyacen/easyconfmgr/medium/nacos"
 )
 
 var namespaceID = "public"
@@ -65,7 +65,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestLoader(t *testing.T) {
-	loader := easyconfmgrnacos.NewLoader(client, group, dataID, confType)
+	loader := mediumnacos.NewLoader(client, group, dataID, confType)
 	contentType := loader.ContentType()
 	assert.Equal(t, confType, contentType, "content type not match")
 
@@ -77,7 +77,7 @@ func TestLoader(t *testing.T) {
 }
 
 func TestWatcher(t *testing.T) {
-	watcher := easyconfmgrnacos.NewWatcher(client, group, dataID, easyconfmgr.DiscardLogger)
+	watcher := mediumnacos.NewWatcher(client, group, dataID)
 	err := watcher.Watch()
 	assert.Nil(t, err, "failed watch file")
 

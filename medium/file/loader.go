@@ -1,9 +1,11 @@
-package easyconfmgrfile
+package mediumfile
 
 import (
 	"io/ioutil"
 	"path/filepath"
 	"strings"
+
+	"github.com/soyacen/goutils/stringutils"
 
 	"github.com/soyacen/easyconfmgr"
 )
@@ -15,29 +17,49 @@ type Loader struct {
 	log         easyconfmgr.Logger
 }
 
-func (l *Loader) ContentType() string {
-	return l.contentType
+func (loader *Loader) ContentType() string {
+	return loader.contentType
 }
 
-func (l *Loader) Load() error {
-	l.log.Info("reading file:", l.filename)
-	rawData, err := ioutil.ReadFile(l.filename)
+func (loader *Loader) Load() error {
+	loader.log.Info("reading file:", loader.filename)
+	rawData, err := ioutil.ReadFile(loader.filename)
 	if err != nil {
 		return err
 	}
-	l.log.Debug("file content:", string(rawData))
-	l.rawData = rawData
+	loader.log.Debug("file content:", string(rawData))
+	loader.rawData = rawData
 	return nil
 }
 
-func (l *Loader) RawData() []byte {
-	return l.rawData
+func (loader *Loader) RawData() []byte {
+	return loader.rawData
 }
 
-func NewLoader(filename string, log easyconfmgr.Logger) easyconfmgr.Loader {
-	contentType := filepath.Ext(filename)
-	if strings.HasPrefix(contentType, ".") {
-		contentType = contentType[1:]
+type LoaderOption func(loader *Loader)
+
+func ContentType(contentType string) LoaderOption {
+	return func(loader *Loader) {
+		loader.contentType = contentType
 	}
-	return &Loader{filename: filename, contentType: contentType, log: log}
+}
+
+func Logger(log easyconfmgr.Logger) LoaderOption {
+	return func(loader *Loader) {
+		loader.log = log
+	}
+}
+
+func NewLoader(filename string, opts ...LoaderOption) easyconfmgr.Loader {
+	loader := &Loader{filename: filename, log: easyconfmgr.DiscardLogger}
+	for _, opt := range opts {
+		opt(loader)
+	}
+	if stringutils.IsBlank(loader.contentType) {
+		loader.contentType = filepath.Ext(filename)
+		if strings.HasPrefix(loader.contentType, ".") {
+			loader.contentType = loader.contentType[1:]
+		}
+	}
+	return loader
 }

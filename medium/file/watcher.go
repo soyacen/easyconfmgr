@@ -1,4 +1,4 @@
-package easyconfmgrfile
+package mediumfile
 
 import (
 	"fmt"
@@ -20,32 +20,32 @@ type Watcher struct {
 	log       easyconfmgr.Logger
 }
 
-func (w *Watcher) Watch() error {
-	w.log.Info("start watch file:", w.filename)
-	err := w.watcher.Add(w.filename)
+func (watcher *Watcher) Watch() error {
+	watcher.log.Info("start watch file:", watcher.filename)
+	err := watcher.watcher.Add(watcher.filename)
 	if err != nil {
 		return fmt.Errorf("failed add watcher file, %w", err)
 	}
 	go func() {
 		for {
 			select {
-			case event, ok := <-w.watcher.Events:
+			case event, ok := <-watcher.watcher.Events:
 				if !ok {
-					w.log.Info("stop watch file:", w.filename)
+					watcher.log.Info("stop watch file:", watcher.filename)
 					return
 				}
-				w.log.Infof("an event [%s] occurs", event.String())
+				watcher.log.Infof("an event [%s] occurs", event.String())
 				if event.Op&fsnotify.Write == fsnotify.Write {
-					data, err := ioutil.ReadFile(w.filename)
+					data, err := ioutil.ReadFile(watcher.filename)
 					if err != nil {
-						w.log.Error(fmt.Errorf("failed read file %s, %w", w.filename, err))
+						watcher.log.Error(fmt.Errorf("failed read file %s, %w", watcher.filename, err))
 						return
 					}
-					w.events <- easyconfmgr.NewEvent(event, data)
+					watcher.events <- easyconfmgr.NewEvent(event, data)
 				}
-			case err, ok := <-w.watcher.Errors:
+			case err, ok := <-watcher.watcher.Errors:
 				if !ok {
-					w.log.Error(fmt.Errorf("failed watch, %w", err))
+					watcher.log.Error(fmt.Errorf("failed watch, %w", err))
 					return
 				}
 				log.Println("error:", err)
@@ -55,31 +55,43 @@ func (w *Watcher) Watch() error {
 	return nil
 }
 
-func (w *Watcher) Events() <-chan *easyconfmgr.Event {
-	return w.events
+func (watcher *Watcher) Events() <-chan *easyconfmgr.Event {
+	return watcher.events
 }
 
-func (w *Watcher) Stop() error {
-	return w.stop()
+func (watcher *Watcher) Stop() error {
+	return watcher.stop()
 }
 
-func (w *Watcher) stop() error {
-	w.mu.RLock()
-	defer w.mu.RUnlock()
-	if !w.isStopped {
-		w.log.Info("stop watching...")
-		w.isStopped = true
-		close(w.events)
-		return w.watcher.Close()
+func (watcher *Watcher) stop() error {
+	watcher.mu.RLock()
+	defer watcher.mu.RUnlock()
+	if !watcher.isStopped {
+		watcher.log.Info("stop watching...")
+		watcher.isStopped = true
+		close(watcher.events)
+		return watcher.watcher.Close()
 	}
 	return nil
 }
 
-func NewWatcher(filename string, log easyconfmgr.Logger) (*Watcher, error) {
+type WatcherOption func(watcher *Watcher)
+
+func WithLogger(log easyconfmgr.Logger) LoaderOption {
+	return func(loader *Loader) {
+		loader.log = log
+	}
+}
+
+func NewWatcher(filename string, opts ...WatcherOption) (*Watcher, error) {
+	w := &Watcher{filename: filename, events: make(chan *easyconfmgr.Event), log: easyconfmgr.DiscardLogger}
+	for _, opt := range opts {
+		opt(w)
+	}
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		return nil, fmt.Errorf("failed new watcher, %w", err)
 	}
-	w := &Watcher{watcher: watcher, filename: filename, log: log, events: make(chan *easyconfmgr.Event)}
+	w.watcher = watcher
 	return w, nil
 }
