@@ -1,4 +1,4 @@
-package mediumfile
+package file
 
 import (
 	"io/ioutil"

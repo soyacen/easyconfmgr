@@ -1,11 +1,11 @@
-package easyconfmgrvaluer_test
+package valuer_test
 
 import (
 	"reflect"
 	"testing"
 	"time"
 
-	easyconfmgrvaluer "github.com/soyacen/easyconfmgr/valuer"
+	"github.com/soyacen/easyconfmgr/valuer"
 )
 
 func TestTrieTreeValuer(t *testing.T) {
@@ -57,7 +57,7 @@ func TestTrieTreeValuer(t *testing.T) {
 		},
 	}
 
-	valuer := easyconfmgrvaluer.NewTrieTreeValuer()
+	valuer := valuer.NewTrieTreeValuer()
 	valuer.AddConfig(config1, config2)
 
 	key1Val, err := valuer.GetString("key1")

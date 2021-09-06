@@ -1,4 +1,4 @@
-package easyconfmgrvaluer
+package valuer
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package mediumnacos
+package nacos
 
 import (
 	"fmt"

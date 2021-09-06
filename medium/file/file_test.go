@@ -1,4 +1,4 @@
-package mediumfile_test
+package file_test
 
 import (
 	"io/ioutil"
@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	mediumfile "github.com/soyacen/easyconfmgr/medium/file"
+	"github.com/soyacen/easyconfmgr/medium/file"
 )
 
 var confFilename = "test.yaml"
@@ -44,7 +44,7 @@ func TestMain(t *testing.M) {
 
 func TestLoader(t *testing.T) {
 	fp := filepath.Join(os.TempDir(), confFilename)
-	loader := mediumfile.NewLoader(fp)
+	loader := file.NewLoader(fp)
 	contentType := loader.ContentType()
 	assert.Equal(t, confType, contentType, "content type not match")
 
@@ -57,7 +57,7 @@ func TestLoader(t *testing.T) {
 
 func TestWatcher(t *testing.T) {
 	fp := filepath.Join(os.TempDir(), confFilename)
-	watcher, err := mediumfile.NewWatcher(fp)
+	watcher, err := file.NewWatcher(fp)
 	assert.Nil(t, err, "failed new watcher")
 	err = watcher.Watch()
 	assert.Nil(t, err, "failed watch file")

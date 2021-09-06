@@ -1,4 +1,4 @@
-package easyconfmgrparser
+package parser
 
 type NopParser struct {
 }

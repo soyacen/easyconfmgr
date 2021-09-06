@@ -1,4 +1,4 @@
-package easyconfmgrparser
+package parser
 
 import (
 	"github.com/spf13/cast"

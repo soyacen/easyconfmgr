@@ -12,9 +12,9 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/soyacen/easyconfmgr"
-	mediumfile "github.com/soyacen/easyconfmgr/medium/file"
-	confmgrparser "github.com/soyacen/easyconfmgr/parser"
-	confmgrvaluer "github.com/soyacen/easyconfmgr/valuer"
+	"github.com/soyacen/easyconfmgr/medium/file"
+	"github.com/soyacen/easyconfmgr/parser"
+	"github.com/soyacen/easyconfmgr/valuer"
 )
 
 type Config struct {
@@ -112,9 +112,9 @@ func TestMain(m *testing.M) {
 
 func TestManager(t *testing.T) {
 	manager := easyconfmgr.NewManager(
-		easyconfmgr.WithLoader(mediumfile.NewLoader(configFile)),
-		easyconfmgr.WithParser(confmgrparser.NewYamlParser()),
-		easyconfmgr.WithValuer(confmgrvaluer.NewTrieTreeValuer()),
+		easyconfmgr.WithLoader(file.NewLoader(configFile)),
+		easyconfmgr.WithParser(parser.NewYamlParser()),
+		easyconfmgr.WithValuer(valuer.NewTrieTreeValuer()),
 	)
 	err := manager.ReadConfig()
 	if err != nil {
@@ -283,7 +283,7 @@ duration: 1s
 	err := ioutil.WriteFile(fp, []byte(confContent), os.ModePerm)
 	assert.Nil(t, err)
 
-	watcher, err := mediumfile.NewWatcher(fp)
+	watcher, err := file.NewWatcher(fp)
 	assert.Nil(t, err)
 
 	manager := easyconfmgr.NewManager(easyconfmgr.WithWatcher(watcher))

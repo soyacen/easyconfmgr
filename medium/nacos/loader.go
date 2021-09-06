@@ -1,4 +1,4 @@
-package mediumnacos
+package nacos
 
 import (
 	"github.com/nacos-group/nacos-sdk-go/clients/config_client"

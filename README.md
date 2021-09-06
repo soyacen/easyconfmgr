@@ -6,9 +6,9 @@ Easy to use、extensible configuration manager for golang
 ```go
 // read config
 manager := easyconfmgr.NewManager(
-    easyconfmgr.WithLoader(mediumfile.NewLoader(configFile)),
-    easyconfmgr.WithParser(confmgrparser.NewYamlParser()),
-    easyconfmgr.WithValuer(confmgrvaluer.NewTrieTreeValuer()),
+    easyconfmgr.WithLoader(file.NewLoader(configFile)),
+    easyconfmgr.WithParser(parser.NewYamlParser()),
+    easyconfmgr.WithValuer(valuer.NewTrieTreeValuer()),
 )
 err := manager.ReadConfig()
 if err != nil {
@@ -20,9 +20,10 @@ assert.Nil(t, err)
 assert.Equal(t, config.String, stringVal)
 
 // watch
-watcher, err := mediumfile.NewWatcher(fp)
+watcher, err := file.NewWatcher(fp)
 assert.Nil(t, err)
 manager := easyconfmgr.NewManager(easyconfmgr.WithWatcher(watcher))
+
 err = manager.StartWatch()
 assert.Nil(t, err)
 events := manager.Events()
