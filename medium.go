@@ -1,10 +1,5 @@
 package easyconfmgr
 
-type Medium interface {
-	Loader
-	Watcher
-}
-
 // Loader load data from some medium.
 type Loader interface {
 	// ContentType get config content type

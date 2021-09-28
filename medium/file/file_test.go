@@ -15,8 +15,7 @@ import (
 
 var confFilename = "test.yaml"
 var confType = "yaml"
-var confContent = `
-bool: true
+var confContent = `bool: true
 int: 10
 int_32: -200
 int_64: -3000
@@ -57,9 +56,8 @@ func TestLoader(t *testing.T) {
 
 func TestWatcher(t *testing.T) {
 	fp := filepath.Join(os.TempDir(), confFilename)
-	watcher, err := file.NewWatcher(fp)
-	assert.Nil(t, err, "failed new watcher")
-	err = watcher.Watch()
+	watcher := file.NewWatcher(fp)
+	err := watcher.Watch()
 	assert.Nil(t, err, "failed watch file")
 	events := watcher.Events()
 	go func() {

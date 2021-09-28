@@ -1,6 +1,7 @@
 package nacos
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 
@@ -25,14 +26,22 @@ type Watcher struct {
 	group     string
 	dataId    string
 	events    chan *easyconfmgr.Event
-	isStopped bool
-	mu        sync.Mutex
+	watchOnce sync.Once
+	stopOnce  sync.Once
 	log       easyconfmgr.Logger
 }
 
 func (watcher *Watcher) Watch() error {
+	err := errors.New("watcher had started watch")
+	watcher.watchOnce.Do(func() {
+		err = watcher.watch()
+	})
+	return err
+}
+
+func (watcher *Watcher) watch() error {
 	watcher.log.Infof("start listen config, dataId: %s, group: %s", watcher.dataId, watcher.group)
-	return watcher.client.ListenConfig(vo.ConfigParam{
+	err := watcher.client.ListenConfig(vo.ConfigParam{
 		DataId: watcher.dataId,
 		Group:  watcher.group,
 		OnChange: func(namespace, group, dataId, data string) {
@@ -40,6 +49,10 @@ func (watcher *Watcher) Watch() error {
 			watcher.events <- easyconfmgr.NewEvent(event, []byte(data))
 		},
 	})
+	if err != nil {
+		return fmt.Errorf("failed to listen config, DataId: %s, Group: %s , %w", watcher.dataId, watcher.group, err)
+	}
+	return nil
 }
 
 func (watcher *Watcher) Events() <-chan *easyconfmgr.Event {
@@ -47,20 +60,22 @@ func (watcher *Watcher) Events() <-chan *easyconfmgr.Event {
 }
 
 func (watcher *Watcher) Stop() error {
-	return watcher.stop()
+	err := errors.New("watcher had stopped")
+	watcher.stopOnce.Do(func() {
+		err = watcher.stop()
+	})
+	return err
 }
 
 func (watcher *Watcher) stop() error {
-	watcher.mu.Lock()
-	defer watcher.mu.Unlock()
-	if !watcher.isStopped {
-		watcher.log.Info("stop watching...")
-		watcher.isStopped = true
-		close(watcher.events)
-		return watcher.client.CancelListenConfig(vo.ConfigParam{
-			DataId: watcher.dataId,
-			Group:  watcher.group,
-		})
+	watcher.log.Info("stop watching nacos config...")
+	close(watcher.events)
+	err := watcher.client.CancelListenConfig(vo.ConfigParam{
+		DataId: watcher.dataId,
+		Group:  watcher.group,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to cancel listen config, %w", err)
 	}
 	return nil
 }
@@ -79,7 +94,15 @@ func NewWatcher(
 	dataId string,
 	opts ...WatcherOption,
 ) *Watcher {
-	watcher := &Watcher{client: client, group: group, dataId: dataId, events: make(chan *easyconfmgr.Event)}
+	watcher := &Watcher{
+		client:    client,
+		group:     group,
+		dataId:    dataId,
+		events:    make(chan *easyconfmgr.Event),
+		watchOnce: sync.Once{},
+		stopOnce:  sync.Once{},
+		log:       nil,
+	}
 	for _, opt := range opts {
 		opt(watcher)
 	}
