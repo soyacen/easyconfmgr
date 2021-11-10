@@ -12,17 +12,14 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/nacos-group/nacos-sdk-go v1.0.8
-	github.com/opentracing-contrib/go-stdlib v1.0.0 // indirect
-	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/soyacen/easyhttp v0.0.0-20211109095312-9534fa79723b
-	github.com/soyacen/goutils/backoffutils v0.0.0-20210915082908-e5fc170a08b3 // indirect
-	github.com/soyacen/goutils/fileutils v0.0.0-20210928070603-8328f9572e01 // indirect
-	github.com/soyacen/goutils/retryutils v0.0.0-20210928033959-7c2c3e5e7cf0 // indirect
+	github.com/soyacen/goutils/backoffutils v0.0.0-20210915082908-e5fc170a08b3
+	github.com/soyacen/goutils/fileutils v0.0.0-20210928070603-8328f9572e01
+	github.com/soyacen/goutils/retryutils v0.0.0-20210928033959-7c2c3e5e7cf0
 	github.com/soyacen/goutils/sliceutils v0.0.0-20210702015357-664d3094d4a3
 	github.com/soyacen/goutils/stringutils v0.0.0-20210722124525-e18c75bb2c2e
 	github.com/spf13/cast v1.3.1
 	github.com/stretchr/testify v1.7.1-0.20210427113832-6241f9ab9942
-	go.opentelemetry.io/otel/oteltest v1.0.0-RC1 // indirect
 	go.uber.org/zap v1.18.1 // indirect
 	golang.org/x/net v0.0.0-20211109214657-ef0fda0de508 // indirect
 	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
