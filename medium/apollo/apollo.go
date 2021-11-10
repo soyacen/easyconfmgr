@@ -28,13 +28,13 @@ type Notification struct {
 
 func getConfigContent(ctx context.Context, uri string, appID, secret, contentType string, client *easyhttp.Client) (string, error) {
 	var resp ConfigResponse
-	chains := []easyhttp.Interceptor{easyhttprespbody.JSON(&resp)}
+	itcptrs := []easyhttp.Interceptor{easyhttprespbody.JSON(&resp)}
 
 	if stringutils.IsNotBlank(secret) {
-		chains = append(chains, easyhttpheader.SetMap(AuthSignatureHeaders(uri, appID, secret)))
+		itcptrs = append(itcptrs, easyhttpheader.SetMap(AuthSignatureHeaders(uri, appID, secret)))
 	}
 
-	reply, err := client.Get(ctx, uri, easyhttp.ChainInterceptor(chains...))
+	reply, err := client.Get(ctx, uri, itcptrs...)
 	if err != nil {
 		return "", err
 	}

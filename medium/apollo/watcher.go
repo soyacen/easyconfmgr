@@ -132,13 +132,13 @@ func (watcher *Watcher) notifyRemoteConfig(ctx context.Context, notificationID i
 	defer cancel()
 
 	var resp []*Notification
-	chains := []easyhttp.Interceptor{easyhttprespbody.JSON(&resp)}
+	itcptrs := []easyhttp.Interceptor{easyhttprespbody.JSON(&resp)}
 
 	if stringutils.IsNotBlank(watcher.secret) {
-		chains = append(chains, easyhttpheader.SetMap(AuthSignatureHeaders(uri, watcher.appID, watcher.secret)))
+		itcptrs = append(itcptrs, easyhttpheader.SetMap(AuthSignatureHeaders(uri, watcher.appID, watcher.secret)))
 	}
 
-	reply, err := watcher.client.Get(ctx, uri, easyhttp.ChainInterceptor(chains...))
+	reply, err := watcher.client.Get(ctx, uri, itcptrs...)
 	if err != nil {
 		return 0, err
 	}
