@@ -13,9 +13,9 @@ require (
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/nacos-group/nacos-sdk-go v1.0.8
 	github.com/soyacen/easyhttp v0.0.0-20211109095312-9534fa79723b
-	github.com/soyacen/goutils/backoffutils v0.0.0-20210915082908-e5fc170a08b3
+	github.com/soyacen/goutils/backoffutils v0.0.0-20220118065743-3d94dedc9902
 	github.com/soyacen/goutils/fileutils v0.0.0-20210928070603-8328f9572e01
-	github.com/soyacen/goutils/retryutils v0.0.0-20210928033959-7c2c3e5e7cf0
+	github.com/soyacen/goutils/retryutils v0.0.0-20220118065743-3d94dedc9902
 	github.com/soyacen/goutils/sliceutils v0.0.0-20210702015357-664d3094d4a3
 	github.com/soyacen/goutils/stringutils v0.0.0-20210722124525-e18c75bb2c2e
 	github.com/spf13/cast v1.3.1

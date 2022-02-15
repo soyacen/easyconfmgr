@@ -70,7 +70,7 @@ func (watcher *Watcher) watch() {
 			watcher.log.Infof("stop watch apollo config, appID: %s, cluster: %s, namespaceName: %s", watcher.appID, watcher.cluster, watcher.namespaceName)
 			return
 		default:
-			err := retryutils.Call(watcher.stopCtx, watcher.call, watcher.maxAttempts, watcher.backoffFunc)
+			err := retryutils.Call(watcher.stopCtx, uint(watcher.maxAttempts), watcher.backoffFunc, watcher.call)
 			// 如果重试N次后还是有error，中断watch
 			if err != nil {
 				watcher.log.Error(err)
@@ -79,7 +79,7 @@ func (watcher *Watcher) watch() {
 	}
 }
 
-func (watcher *Watcher) call() error {
+func (watcher *Watcher) call(_ int) error {
 	// 获取远程配置notificationID
 	notificationID, err := watcher.notifyRemoteConfig(watcher.stopCtx, watcher.notificationID)
 	if err != nil {
